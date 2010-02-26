@@ -1,0 +1,22 @@
+Actions:
+ahead(double distance) 
+fire(double power) 
+turnGunLeft(double degrees) 
+turnLeft(double degrees) 
+turnRadarLeft(double degrees) 
+
+Events:
+onBulletHit(BulletHitEvent event)			This method is called when one of your bullets hits another robot.
+onHitByBullet(HitByBulletEvent event)		This method is called when your robot is hit by a bullet.
+onHitRobot(HitRobotEvent event)				This method is called when your robot collides with another robot.
+onHitWall(HitWallEvent event)				This method is called when your robot collides with a wall.
+onScannedRobot(ScannedRobotEvent event)		This method is called when your robot sees another robot, i.e. when the robot's radar scan "hits" another robot.
+
+Booleans:
+setAdjustGunForRobotTurn(boolean independent)	Sets the gun to turn independent from the robot's turn.
+setAdjustRadarForGunTurn(boolean independent)	Sets the radar to turn independent from the gun's turn.
+setAdjustRadarForRobotTurn(boolean independent)	Sets the radar to turn independent from the robot's turn.
+
+Colors (Extra):
+setColors(Color bodyColor, Color gunColor, Color radarColor, Color bulletColor, Color scanArcColor) 
+

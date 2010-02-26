@@ -1,11 +1,26 @@
 import robocode.control.*;
 import robocode.control.events.*;
+import javax.tools.*;
 
-public class RobocodeRunner {
+/**
+ * Application that demonstrates how to run two sample robots in Robocode using the
+ * RobocodeEngine from the robocode.control package.
+ *
+ * @author Flemming N. Larsen
+ */
+public class CopyOfRobocodeRunner {
 
     public static void main(String[] args) {
 
-    	
+    	String fileToCompile = "C:/robocode/robots/sample/Crazy.java";
+    	JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    	int compilationResult =	compiler.run(null, null, null, fileToCompile);
+    			if(compilationResult == 0){
+    				System.out.println("Compilation is successful");
+    			}else{
+    				System.err.println("Compilation Failed");
+    			}
+    		
     	
         // Create the RobocodeEngine
         //   RobocodeEngine engine = new RobocodeEngine(); // Run from current working directory
@@ -20,8 +35,8 @@ public class RobocodeRunner {
         // Setup the battle specification
 
         int numberOfRounds = 5;
-        BattlefieldSpecification battlefield = new BattlefieldSpecification(800, 600);
-        RobotSpecification[] selectedRobots = engine.getLocalRepository("sample.Fire,ga.RoboTemp");
+        BattlefieldSpecification battlefield = new BattlefieldSpecification(800, 600); // 800x600
+        RobotSpecification[] selectedRobots = engine.getLocalRepository("sample.Fire,sample.Crazy");
 
         BattleSpecification battleSpec = new BattleSpecification(numberOfRounds, battlefield, selectedRobots);
 
@@ -49,7 +64,6 @@ class BattleObserver extends BattleAdaptor {
         // Print out the sorted results with the robot names
         System.out.println("Battle results:");
         for (robocode.BattleResults result : e.getSortedResults()) {
-        	
             System.out.println("  " + result.getTeamLeaderName() + ": " + result.getScore());
         }
     }
