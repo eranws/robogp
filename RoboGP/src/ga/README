@@ -3,3 +3,4 @@ Eran Weissenstern
 
 Since there's no objective fitness function,
 the fitness is the total grade the robot acheived on the last era.  
+era: round of battles.
