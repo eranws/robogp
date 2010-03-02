@@ -1,16 +1,17 @@
 package ga;
 import robocode.*;
-//import java.awt.Color;
+import java.awt.Color;
 
 public class RoboTemp extends Robot
 {
+	private static final boolean GUN_ROBOT = false;
+	private static final boolean RADAR_ROBOT = false;
+	
 	public void run() {
-		setAdjustGunForRobotTurn(/*HERE*/true);
-		setAdjustRadarForGunTurn(/*HERE*/true);
-		setAdjustRadarForRobotTurn(/*HERE*/true);
+		setAdjustGunForRobotTurn(GUN_ROBOT);
+		setAdjustRadarForRobotTurn(RADAR_ROBOT);
 
-//		setColors(bodyColor,gunColor,radarColor,bulletColor,scanArcColor); XXX use the same params! 
-
+//		setColors(bodyColor,gunColor,radarColor,bulletColor,scanArcColor); XXX use the same params!
 
 		while(true) {
 			/*HERE*/

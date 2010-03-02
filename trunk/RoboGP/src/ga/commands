@@ -4,6 +4,9 @@ fire(double power)
 turnGunLeft(double degrees) 
 turnLeft(double degrees) 
 turnRadarLeft(double degrees) 
+turnGunRight(double degrees) 
+turnRight(double degrees) 
+turnRadarRight(double degrees) 
 
 Events:
 onBulletHit(BulletHitEvent event)			This method is called when one of your bullets hits another robot.
@@ -14,9 +17,13 @@ onScannedRobot(ScannedRobotEvent event)		This method is called when your robot s
 
 Booleans:
 setAdjustGunForRobotTurn(boolean independent)	Sets the gun to turn independent from the robot's turn.
-setAdjustRadarForGunTurn(boolean independent)	Sets the radar to turn independent from the gun's turn.
 setAdjustRadarForRobotTurn(boolean independent)	Sets the radar to turn independent from the robot's turn.
 
 Colors (Extra):
 setColors(Color bodyColor, Color gunColor, Color radarColor, Color bulletColor, Color scanArcColor) 
 
+
+
+canceled:
+setAdjustRadarForGunTurn(boolean independent)	Sets the radar to turn independent from the gun's turn.
+Note: Calling setAdjustRadarForGunTurn(boolean) will automatically call Robot.setAdjustRadarForRobotTurn(boolean) 
