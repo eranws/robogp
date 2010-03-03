@@ -1,0 +1,383 @@
+<HTML><HEAD><TITLE>Manpage of jikes</TITLE>
+</HEAD><BODY>
+<H1>jikes</H1>
+Section: User Commands  (1)<BR><A HREF="#index">Index</A>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+jikes - java source to bytecode compiler
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+jikes [<I>-options</I>] [<I>+options</I>] [<I>@files</I>]
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>file.java</I>...
+<P>
+Options, @files, and filenames may be intermixed. Individual options
+should not be repeated, unless noted below.
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<B>Jikes</B> translates Java(TM) source files to bytecode. Features
+include strict adherence to the language specification, automatic
+makefile generation and incremental compilation. It is maintained
+by the Jikes Project.
+<P>
+At this time, jikes only recognizes the full name of options; you
+cannot abbreviate or group them. You can give different argument types
+in any order. Options are global, so they affect compilation of files
+listed earlier on the command line. Duplicated options override the
+previous one, unless otherwise listed. If an option is listed in the
+form <B>+T=n</B>, it can also be specified as <B>+T n</B> or even
+<B>+Tn</B>.
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<B>Jikes</B> may be invoked with the following command-line options:
+<P>
+<DL COMPACT>
+<DT><B>-bootclasspath</B> <I>path</I><DD>
+<DT><B>--bootclasspath</B> <I>path</I><DD>
+Use path for the bootclasspath. This path is searched first for
+library class files, and is usually set to <B>java/lib/classes.zip</B>
+or <B>java/jre/lib/rt.jar</B>.  This defaults to an empty path.
+<P>
+<DT><B>-classpath</B> <I>path</I><DD>
+<DT><B>-cp</B> <I>path</I><DD>
+<DT><B>--classpath</B> <I>path</I><DD>
+Use path for CLASSPATH. This path is searched for both user source and
+compiled class files. This defaults to the current directory.
+
+<P>
+<DT><B>-d</B> <I>directory</I><DD>
+<DT><B>--target-directory</B> <I>directory</I><DD>
+Write class files in the specified directory. Note that this directory is
+NOT in your classpath unless you list it there as well. This defaults
+to the current directory.
+<P>
+<DT><B>-debug<DD>
+No effect (recognized for compatibility).
+<P>
+<DT>-depend<DD>
+<DT>--depend<DD>
+<DT>-Xdepend<DD>
+Recompile all used classes.
+<P>
+<DT>-deprecation<DD>
+<DT>--deprecation<DD>
+Report uses of deprecated features.
+<P>
+<DT>-encoding</B> <I>encoding</I><DD>
+<DT><B>--encoding</B> <I>encoding</I><DD>
+Use specified encoding to read source files. This is not available in
+some builds, because it requires a working iconv or ICU encoder.
+<B>Note</B> that binary distributions for some platforms (such as
+Windows) do NOT include support for the encoding option, as there
+is not an adequate transcoding library available on all platforms by
+default. You can tell if a binary has encoding support or not by
+running <I>jikes --help</I> and looking for the --encoding option:
+if it is not listed, then this binary does NOT include support for
+encoding. This defaults to a platform-dependent encoding (such as
+ASCII).
+<P>
+<DT><B>-extdirs</B> <I>path</I><DD>
+<DT><B>--extdirs</B> <I>path</I><DD>
+Use path for extensions directories. This is typically set to grab jar
+and zip extension files located in <B>java/jre/lib/ext</B>. This
+defaults to an empty path.
+<P>
+<DT><B>-g<DD>
+Equivalent to -g:source,lines,vars</B>.
+<P>
+<DT><B>-g:none</B>|{<B>source,lines,vars</B>}<DD>
+Specify which of three classfile debug options should be enabled. If
+this is not specified, the default is
+<B>source,lines</B>. <B>source</B> stores the filename of the source
+file in the class file, <B>lines</B> adds line number tracking to tie
+bytecodes to their location in the source file, and <B>vars</B> adds a
+table in the class file which stores the name of local variables and
+parameters, as well as their scope. This defaults to line and source
+information, but not vars.
+<P>
+<DT><B>-help<DD>
+<DT>--help<DD>
+<DT>-h<DD>
+<DT>-?<DD>
+Prints a helpful summary of options, then exit. Overrides all other
+options, and nothing is compiled.
+<P>
+<DT>-J</B>...<DD>
+No effect, since jikes is native code, and does not need a Virtual
+Machine (ignored for compatibility).
+<P>
+<DT><B>-nowarn<DD>
+<DT>--nowarn<DD>
+<DT>-q<DD>
+Do not issue warning messages. For greater control over warnings
+and cautions, see the +Z option.
+<P>
+<DT>-nowrite<DD>
+<DT>--nowrite<DD>
+Do not write any class files, but list which ones would be written if
+used with -verbose</B>.
+<P>
+<DT><B>-O<DD>
+<DT>--optimize<DD>
+Optimize the bytecode. Technically, this means jikes should inline
+private and final methods where appropriate, but currently it does
+nothing.
+<P>
+<DT>-source</B> <I>release</I><DD>
+<DT><B>--source</B> <I>release</I><DD>
+Specify which Java SDK release the source syntax obeys. For example,
+to treat the <I>assert</I> keyword as a normal identifier, you can use
+<B>-source 1.3</B>. Setting a lower target results in backward
+compatibility compilation of old source files.  Valid releases are 1.3
+(Java Language Specification, 2nd edition), and 1.4 (addition of the
+assert statement, JSR 41).  Plans are underway to eventually support
+1.5 (addition of generics: JSR 14; autoboxing, enhanced for-loop,
+static import, enums, and varargs: JSR 201; metadata: JSR 175; and
+updated .class file format: JSR 202; ultimately the Java Language
+Specification, 3rd edition). If not specified, this defaults to the
+valid value closest to the one specified or defaulted for
+<B>-target</B> (typically 1.4).
+<P>
+<DT><B>-sourcepath</B> path<DD>
+<DT><B>--sourcepath</B> path<DD>
+Use path for specifying user &quot;source only&quot; directories. Class files in
+this path are ignored unless listed in other paths. This defaults to
+the empty path.
+<P>
+<DT><B>-target</B> <I>release</I><DD>
+<DT><B>--target</B> <I>release</I><DD>
+Specify which Java SDK release the bytecode should target.  For
+example, exception chaining was introduced in the 1.4 release, so a
+failed class literal can chain the NoClassDefFoundError to its
+original ClassNotFoundException; while the behavior in the 1.3 release
+simply discards the original exception.  To get the old behavior, you
+can use <B>-target 1.3</B>.  Setting a lower target results in forward
+compatibility to older virtual machines, and some source constructs
+will be compiled to less efficient workarounds in order to avoid known
+virtual machine bugs or deficiencies.  However, a lower target may
+occaisionally produce incorrect semantic behavior.  Furthermore, some
+language features require virtual machine support, where there are no
+known workarounds in earlier releases: the assert statement requires
+1.4 (unless you also use <B>-noassert</B>), and the planned addition
+of typesafe enumerations will require 1.5. The planned addition of
+type parameterization (also known as generics) will work with 1.1.
+Valid releases are 1.1, 1.2, 1.3, 1.4, and 1.4.2; plans are underway
+to support 1.5.  If not specified, this defaults to the value
+specified for <B>-source</B>, and if that is not specified, this
+defaults to 1.4.2.
+<P>
+<DT><B>-verbose<DD>
+<DT>--verbose<DD>
+<DT>-v<DD>
+List files read and written. Also useful with -nowrite</B> for a
+dry run to track dependencies.
+<P>
+<DT><B>-version<DD>
+<DT>--version<DD>
+<DT>-V<DD>
+Print a version message, and contact information, then exit. Overrides
+all other options except --help</B>, and nothing is compiled.
+<P>
+<DT><B>-Werror<DD>
+Equivalent to +Z2, provided for javac compatibility.
+<P>
+<DT>-Xstdout<DD>
+Write error messages to standard output, not stderr. At the moment,
+this is incompatible with javac, which takes an argument as the name
+of the file where it will direct compiler message output.
+<P>
+<DT>-Xswitchcheck<DD>
+Synonym to +Pswitchcheck</B>. Warns about fallthrough switch cases.
+<P>
+<DT><B>++<DD>
+<DT>--incremental<DD>
+Compile in incremental mode.  In this mode, jikes stays resident, and
+every keypress of </B><I>Enter</I> will trigger a recompilation of every
+source file rendered out-of-date by file modifications since the
+last compilation phase.  To exit this mode, type <I>q</I> then
+<I>Enter</I>.
+<P>
+<DT><B>+a<DD>
+<DT>--noassert<DD>
+Do not emit assert statements.  This option is not recommended for
+disabling asserts, because asserts are compiled to have minimal
+overhead when disabled through the virtual machine.  Rather, it is
+intended for reducing classfile size, and to allow the use of
+-target 1.3</B> or earlier virtual machine targets that do not
+support the assert statement.
+<P>
+<DT><B>+B<DD>
+<DT>--nobytecode<DD>
+Do not invoke bytecode generator. Perform semantic checks only.
+<P>
+<DT>+D<DD>
+<DT>--dump-errors<DD>
+Report errors immediately in emacs-form without buffering.
+<P>
+<DT>+DR=</B><I>filename</I><DD>
+Write report of dependencies to specified file.
+
+<P>
+<DT><B>+E<DD>
+<DT>--emacs<DD>
+List errors in emacs-form.
+<P>
+<DT>+F<DD>
+<DT>--full-dependence<DD>
+Do full dependence check except for Zip and Jar files.
+<P>
+<DT>+K</B><I>name</I><B>=</B><I>TypeKeyWord</I><DD>
+Map name to type keyword. Multiple options are needed to change more
+than one type keyword.
+<P>
+<DT><B>+M<DD>
+<DT>--makefile<DD>
+Generate makefile dependencies.
+<P>
+<DT>+OLDCSO<DD>
+Select to use same classpath search order as in older versions of
+Jikes (for compatibility).
+
+<P>
+<DT>+P</B>[<I>group-name</I>]<DD>
+Pedantic compilation - issues lots of warnings.
+With no group name, this
+turns on a default set of pedantic warnings which does not correspond
+to any of the named groups of warnings.
+Specifying a group name turns on or off that particular named group of
+warnings, depending on the presence of the <I>no-</I> prefix. Some named
+groups are enabled by default. These are marked as such in the output
+of <B>jikes --help</B>.
+At present, the recognized group names are
+<B>effective-java</B>, which warns about the anti-patterns mentioned
+in Joshua Bloch's book &quot;Effective Java&quot;;
+<B>modifier-order</B>, which warns about the recommended ordering of
+multiple modifiers;
+<B>redundant-modifiers</B>, which warns about explicitly mentioning
+an implied modifier;
+<B>serial</B>, which warns about serializable classes without
+serialVersionUID fields;
+<B>shadow</B>, which warns about shadowing and hiding of fields;
+<B>switchcheck</B>, which
+warns about fallthrough between cases of switch statements;
+<B>naming-convention</B>, which warns about names that violate Java
+naming conventions;
+<B>unused-type-imports</B>, which warns about unused single-type
+import statements;
+and <B>unused-package-imports</B>, which warns about unused package
+import statements.
+In addition, the pseudo-group <B>all</B> stands for all named groups
+of warnings, but not the anonymous group controlled by <B>+P</B>.
+Multiple <B>+P</B> options are cumulative in effect. For
+example, to get all pedantic warnings except modifier ordering, use
+<B>+P +Pall +Pno-modifier-order</B>. To get just warnings about redundant
+modifiers, without other pedantic warnings, use
+<B>+Predundant-modifiers</B>.
+<P>
+<DT><B>--pedantic<DD>
+Synonym for +P</B>, but does not accept flags.
+<P>
+<DT><B>+T=</B><I>n</I><DD>
+<DT><B>--tab=</B><I>n</I><DD>
+Set value of tab to <I>n</I> spaces. If not specified, the default is 8.
+<P>
+<DT><B>+U<DD>
+<DT>--unzip-dependence<DD>
+Do full dependence check including Zip and Jar files.
+<P>
+<DT>+Z0<DD>
+Do not issue warning messages.
+<P>
+<DT>+Z1<DD>
+Treat cautions as errors.
+<P>
+<DT>+Z2<DD>
+Treat both warnings and cautions as errors.
+<P>
+<DT>+Z<DD>
+<DT>--zero-cautions<DD>
+Equivalent to +Z1</B> for compatibility with earlier versions of
+<B>Jikes</B>.
+<P>
+</DL>
+<P>
+
+An argument may have the form <I>@file</I>, which names a <I>file</I>
+holding additional command-line arguments.  Each line in that file is
+treated as an argument, except that lines beginning with <I>@</I> are
+not expanded recursively.  Lines may optionally be quoted using either
+single or double quotes.  There are no escape characters (<I>'\'</I>
+is not treated as special).
+<P>
+<A NAME="lbAF">&nbsp;</A>
+<H2>FILES</H2>
+
+<B>Jikes</B> has several options related to classpath searching.
+The -bootclasspath, -extdirs, and -sourcepath options are the same
+as in javac.  In addition to being specified on the command line, the
+environment variables <B>BOOTCLASSPATH</B>, <B>EXTDIRS</B>, and
+<B>SOURCEPATH</B> may also be used to specify values for these options,
+respectively.  <B>Jikes</B> also has the -classpath option as in javac,
+with the corresponding environment variable <B>CLASSPATH</B>.  The
+classpath may also be specified in the environment variable
+<B>JIKESPATH</B>, although this use is discouraged.  If <B>JIKESPATH</B>
+and <B>CLASSPATH</B> coexist, preference will be given to
+<B>JIKESPATH</B>.  A value specified on the command line will be always
+be given preference over the value of any environment variable.  All
+the directories and files specified in these options or environment
+variables must be in the platform path format (usually a
+colon-separated list, e.g., &quot;.:$HOME/java/jre/lib/rt.jar&quot;).
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+Jikes Project homepage 
+<I><A HREF="http://ibm.com/developerworks/opensource/jikes/">http://ibm.com/developerworks/opensource/jikes/</A></I>
+for news of recent developments, to download new versions, to report
+bugs, or to learn how to participate in the development process.
+<P>
+<A NAME="lbAH">&nbsp;</A>
+<H2>COPYRIGHT</H2>
+
+Copyright &#169; 1996-2003, 2004 IBM Corporation and others. All Rights Reserved.
+<P>
+<P>
+
+<B>Jikes</B> is licensed under the <I>IBM Public License</I>, included
+in the file <I>license.htm</I> distributed with the program, and also
+available at the Jikes Project URL.
+
+Portions of <B>Jikes</B> are derived from prior, freely distributable
+projects.  For more details on this code, see the comments in
+src/double.h, src/platform.h, and src/unzip.h.
+<P>
+<A NAME="lbAI">&nbsp;</A>
+<H2>NOTES</H2>
+
+Java is a registered trademark of Sun Microsystems, Inc.
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">FILES</A><DD>
+<DT><A HREF="#lbAG">SEE ALSO</A><DD>
+<DT><A HREF="#lbAH">COPYRIGHT</A><DD>
+<DT><A HREF="#lbAI">NOTES</A><DD>
+</DL>
+<HR>
+This document was created by man2html, using the standard unix manual
+pages, then hacked on by cabbey to make the output standalone for
+windows users.
+</BODY>
+</HTML>
