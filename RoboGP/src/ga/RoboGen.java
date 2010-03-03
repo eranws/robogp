@@ -139,31 +139,14 @@ public class RoboGen {
 
 			for (int i=0;i<EVENTS;i++){
 				for (int j=0;j<COMMANDS_PER_EVENT;j++){
-					command = Integer.parseInt(chromosome.substring(FLAGS+j*(COMMANDS+ACCURACY), FLAGS+COMMANDS+j*(COMMANDS+ACCURACY)),2);
-					param = Integer.parseInt(chromosome.substring(FLAGS+COMMANDS+j*(COMMANDS+ACCURACY), FLAGS+(j+1)*(COMMANDS+ACCURACY)),2);
+					command = Integer.parseInt(chromosome.substring(FLAGS+j*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i, FLAGS+COMMANDS+j*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i),2);
+					param = Integer.parseInt(chromosome.substring(FLAGS+COMMANDS+j*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i, FLAGS+(j+1)*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i),2);
 					fw.write(getCommandLine(command,param));
 					
 				}
 				fw.write(parts[i+3]);
 			}
-
-			System.out.println(chromosome.charAt(1));
-			System.out.println(chromosome.charAt(2));
-			System.out.println(chromosome.charAt(3));
-
-
-
-
-
-			sb = new StringBuilder();
-			//convert string to commands
-			//		sb.insert(offset, b);
-			fw.write(sb.toString());
-
-
-
-
-			fw.flush();
+			
 			fw.close();
 			compile();
 		} catch (IOException e) {e.printStackTrace();}
@@ -172,8 +155,6 @@ public class RoboGen {
 
 	private void compile()
 	{
-		//		String fileToCompile = file.getAbsolutePath();	//Constants.path+"RoboTemp.java";//XXX
-		
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		int compilationResult =	compiler.run(null, null, null, filename);
 		if(compilationResult == 0){

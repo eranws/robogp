@@ -1,47 +1,50 @@
 import ga.RoboGen;
+import robocode.BattleResults;
 import robocode.control.*;
 import robocode.control.events.*;
 
-public class RobocodeRunner {
+public class RobocodeRunner extends BattleAdaptor {
 
-	int population;
+	static int population=1;
+	private BattleResults[] sortedResults;
+	
 	public static void main(String[] args) {
 
-		RoboGen[] rg = new RoboGen[4];
-		for (int i = 0;i<4;i++)
+		String robotString="sample.Fire";
+		RoboGen[] rg = new RoboGen[population];
+		for (int i = 0;i<population;i++){
 			rg[i]= new RoboGen();
+			robotString+=",ga."+rg[i].getName();
+		}
 
-		RobocodeEngine engine = new RobocodeEngine(new java.io.File("robocode")); // Run from C:/Robocode
+		RobocodeEngine engine = new RobocodeEngine(new java.io.File("robocode")); // Run from .../RoboGP/robocode
 
 		// Add our own battle listener to the RobocodeEngine 
-		engine.addBattleListener(new BattleObserver());
+		engine.addBattleListener(new RobocodeRunner());
+		
 
 		// Show the Robocode battle view
 		engine.setVisible(true);
 
 		// Setup the battle specification
-		int numberOfRounds = 3;
+		int numberOfRounds = 10;
 		BattlefieldSpecification battlefield = new BattlefieldSpecification(800, 600);
-		RobotSpecification[] selectedRobots = engine.getLocalRepository();//"sample.Fire,ga."+rg.getName());
+		RobotSpecification[] selectedRobots = engine.getLocalRepository(robotString);
 
 		BattleSpecification battleSpec = new BattleSpecification(numberOfRounds, battlefield, selectedRobots);
 
 		// Run our specified battle and let it run till it is over
 		engine.runBattle(battleSpec, true/* wait till the battle is over */);
 
+		
 		// Cleanup our RobocodeEngine
 		engine.close();
 
 		// Make sure that the Java VM is shut down properly
 		System.exit(0);
 	}
-}
 
 
-/**
- * Our private battle listener for handling the battle event we are interested in.
- */
-class BattleObserver extends BattleAdaptor {
 
 	// Called when the battle is completed successfully with battle results
 	public void onBattleCompleted(BattleCompletedEvent e) {
@@ -53,6 +56,7 @@ class BattleObserver extends BattleAdaptor {
 
 			System.out.println("  " + result.getTeamLeaderName() + ": " + result.getScore());
 		}
+		sortedResults =  e.getSortedResults();
 	}
 
 	// Called when the game sends out an information message during the battle
