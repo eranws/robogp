@@ -4,27 +4,25 @@ import robocode.control.events.*;
 
 public class RobocodeRunner {
 
+	int population;
 	public static void main(String[] args) {
 
-		RoboGen rg = new RoboGen();
+		RoboGen[] rg = new RoboGen[4];
+		for (int i = 0;i<4;i++)
+			rg[i]= new RoboGen();
 
-
-		// Create the RobocodeEngine
-//		RobocodeEngine engine = new RobocodeEngine(); // Run from current working directory
-//		RobocodeEngine engine = new RobocodeEngine(new java.io.File("C:/Robocode")); // Run from C:/Robocode
 		RobocodeEngine engine = new RobocodeEngine(new java.io.File("robocode")); // Run from C:/Robocode
 
 		// Add our own battle listener to the RobocodeEngine 
 		engine.addBattleListener(new BattleObserver());
 
 		// Show the Robocode battle view
-		engine.setVisible(false);
+		engine.setVisible(true);
 
 		// Setup the battle specification
-
-		int numberOfRounds = 5;
+		int numberOfRounds = 3;
 		BattlefieldSpecification battlefield = new BattlefieldSpecification(800, 600);
-		RobotSpecification[] selectedRobots = engine.getLocalRepository("sample.Fire,ga.RoboTemp");
+		RobotSpecification[] selectedRobots = engine.getLocalRepository();//"sample.Fire,ga."+rg.getName());
 
 		BattleSpecification battleSpec = new BattleSpecification(numberOfRounds, battlefield, selectedRobots);
 
