@@ -62,11 +62,12 @@ public class RoboGen {
 		else
 			chromosome = (str);
 
+		serial=statserial++; //set and update serial
+		generation=statgeneration;
+		
 		makeRobot();
 
 
-		serial=statserial++; //set and update serial
-		generation=statgeneration;
 
 
 	}
@@ -104,33 +105,53 @@ public class RoboGen {
 	private  File file;
 	private  FileWriter fw;
 
+	private String filename;
+
 	public void makeRobot(){
-
-		System.out.println(Boolean.valueOf(""+chromosome.charAt(0))); //XXX
-		System.out.println(Boolean.valueOf(""+chromosome.charAt(1)));
-		
-		Integer command, param;
-		
-		for (int i=0;i<EVENTS;i++){
-			for (int j=0;j<COMMANDS_PER_EVENT;j++){
-			
-			 command = Integer.valueOf(chromosome.substring(2+j*(COMMANDS+ACCURACY), 5+j*(COMMANDS+ACCURACY)));
-			 param = Integer.valueOf(chromosome.substring(5+j*(COMMANDS+ACCURACY), 12+j*(COMMANDS+ACCURACY)));
-			
-			}
-		}
-		
-		System.out.println(chromosome.charAt(1));
-		System.out.println(chromosome.charAt(2));
-		System.out.println(chromosome.charAt(3));
-		
-
 		//Create file
-		name = String.valueOf(generation)+String.valueOf(serial);
-		file = new File(Constants.path+name);
+		name = "Robo"+String.valueOf(generation)+String.valueOf(serial);
+		filename = Constants.path+name+".java";
+		file = new File(filename);
 		try {				
-		file.createNewFile();
-		fw = new FileWriter(file);
+			file.createNewFile();
+			fw = new FileWriter(file);
+
+			String[] parts= new String[]{
+					"package ga;\nimport robocode.*;\nimport java.awt.Color;\npublic class "+name+" extends Robot{\nprivate static final boolean GUN_ROBOT = ",
+					";\n private static final boolean RADAR_ROBOT = ",
+					";\npublic void run(){\nsetAdjustGunForRobotTurn(GUN_ROBOT);\nsetAdjustRadarForRobotTurn(RADAR_ROBOT);\nwhile(true){\n",
+					"\n}\n}\npublic void onScannedRobot(ScannedRobotEvent e) {\n",
+					"\n}public void onHitByBullet(HitByBulletEvent e) {\n",
+					"\n}public void onBulletHit(BulletHitEvent event){\n",
+					"\n}public void	onHitRobot(HitRobotEvent event){\n",
+					"\n}public void onHitWall(HitWallEvent event){\n",
+					"\n}}"
+			};
+			
+			
+			fw.write(parts[0]);
+			fw.write(String.valueOf(Boolean.valueOf(""+chromosome.charAt(0))));
+			fw.write(parts[1]);
+			fw.write(String.valueOf(Boolean.valueOf(""+chromosome.charAt(1))));
+			fw.write(parts[2]);
+
+			int command, param;
+
+			for (int i=0;i<EVENTS;i++){
+				for (int j=0;j<COMMANDS_PER_EVENT;j++){
+					command = Integer.parseInt(chromosome.substring(FLAGS+j*(COMMANDS+ACCURACY), FLAGS+COMMANDS+j*(COMMANDS+ACCURACY)),2);
+					param = Integer.parseInt(chromosome.substring(FLAGS+COMMANDS+j*(COMMANDS+ACCURACY), FLAGS+(j+1)*(COMMANDS+ACCURACY)),2);
+					fw.write(getCommandLine(command,param));
+					
+				}
+				fw.write(parts[i+3]);
+			}
+
+			System.out.println(chromosome.charAt(1));
+			System.out.println(chromosome.charAt(2));
+			System.out.println(chromosome.charAt(3));
+
+
 
 
 
@@ -148,12 +169,13 @@ public class RoboGen {
 		} catch (IOException e) {e.printStackTrace();}
 	}
 
+
 	private void compile()
 	{
 		//		String fileToCompile = file.getAbsolutePath();	//Constants.path+"RoboTemp.java";//XXX
-		String fileToCompile = Constants.path+name;
+		
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		int compilationResult =	compiler.run(null, null, null, fileToCompile);
+		int compilationResult =	compiler.run(null, null, null, filename);
 		if(compilationResult == 0){
 			System.out.println("Compilation is successful");//XXX BREAK?
 		}else{
@@ -162,6 +184,34 @@ public class RoboGen {
 
 	}
 
+
+	private String getCommandLine(int command, int param) {
+
+		String s=actions[(command)]+getParam(command,param)+");";
+		return s;
+		
+
+	}
+	private double getParam(int action, int value){
+		return rangeMin[action]+(rangeMax[action]-rangeMin[action])*(value/Math.pow(2,ACCURACY));
+	}
+
+	final double[] rangeMin = {-100,0.1,0,0,0,0,0,0};
+	final double[] rangeMax = {100,3,180,180,180,180,180,180};
+
+	final String[] actions= new String[]{
+			"ahead(", //distance
+			"fire(", //power
+			"turnGunLeft(", //degree
+			"turnLeft(",
+			"turnRadarLeft(",
+			"turnGunRight(", 
+			"turnRight(",
+			"turnRadarRight("
+	};
+
+
+	
 }
 
 
