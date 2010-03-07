@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, BigBird!</string>
+    <string name="hello">BigBird!</string>
     <string name="app_name">BigBird</string>
+    <string name="timer">Click to Record new act</string>
 </resources>
