@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<Button android:id="@+id/Button05" android:layout_height="wrap_content" android:bufferType="normal" android:layout_width="fill_parent" android:text="Record"></Button>
+<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center_vertical|center_horizontal" android:text="@string/timer"/><Button android:id="@+id/Button06" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Cancel"></Button>
+<Button android:id="@+id/Button07" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Select from list" ></Button>
+<Button android:id="@+id/Button08" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Create new act"></Button>
+<Button android:id="@+id/Button09" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Back to main menu"></Button>
+
+</LinearLayout>
