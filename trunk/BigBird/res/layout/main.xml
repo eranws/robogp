@@ -5,9 +5,13 @@
     android:layout_height="fill_parent"
     >
 
-<Button android:id="@+id/Button01" android:layout_height="wrap_content" android:bufferType="normal" android:layout_width="fill_parent" android:text="Start"></Button>
-<Button android:id="@+id/Button02" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Train"></Button>
-<Button android:id="@+id/Button03" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Load"></Button>
-<Button android:id="@+id/Button04" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Save"></Button>
-<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/hello" android:gravity="center_vertical|center_horizontal" android:id="@string/hello"/>
+
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_weight="5" android:layout_width="fill_parent"><Button android:id="@+id/Button01" android:bufferType="normal" android:layout_width="fill_parent" android:text="Start" android:gravity="center" android:hapticFeedbackEnabled="true" android:layout_height="fill_parent" android:longClickable="true"></Button></LinearLayout>
+
+
+<TextView android:layout_width="fill_parent" android:text="@string/hello" android:gravity="center_vertical|center_horizontal" android:id="@string/hello" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_weight="5"/><LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_gravity="center" android:layout_height="wrap_content" android:orientation="vertical"><Button android:id="@+id/Button02" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Train"></Button><Button android:id="@+id/Button03" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Load"></Button><Button android:id="@+id/Button04" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Save"></Button></LinearLayout>
+
+
+
+
 </LinearLayout>
