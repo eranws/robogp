@@ -1,263 +1,57 @@
 package Eran.WS;
 
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Vector;
 
 import winterwell.jtwitter.Twitter;
 import android.app.Activity;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-public class BigBird extends Activity {
+public class BigBird extends Activity implements OnClickListener {
 
-	private static final long SAMPLE_INTERVAL	= 500; //Milliseconds
-	private static final int SAMPLE_SIZE		= 10; //seconds
-	private static int trainCounter= 0; //seconds
-	private static int startCounter1= 0; //seconds
-	private static int startCounter2= 0; //seconds
-	private static int startCounter3= 0; //seconds
+	private static final int TRAIN_REQUEST = 0;
+	private static final int START_REQUEST = 1;
 
-	// UI Buttons
-
+	//UI
 	TextView tv;
-	Button start;
-	Button train;
-	Button load;
-	Button save;
+	// UI Buttons
+	Button	start,train,load,save,record,cancel,select,create,back;
 
-	Button record;
-	Button cancel;
-	Button select;
-	Button create;
-	Button back;
-
-	private Timer timer;
-	private TimerTask startTimerTask;
-	private TimerTask recordTimerTask;
-
-
-	private float tempx,tempy,tempz;
-
-	private float[][] trainData;
 
 	private Vibrator vib;
-	private OnClickListener startListener = new OnClickListener() {
-
-		public void onClick(View v) {
-			log("Start");
-			start.setText("Stop");
-			start.setOnClickListener(stopListener);
-
-			timer.scheduleAtFixedRate(startTimerTask,0,SAMPLE_INTERVAL);
-
-
-		}
-	}; 
-
-	private OnClickListener stopListener = new OnClickListener() {
-		public void onClick(View v) {
-			//		startActivity(new Intent(BigBird.this, HelloAccelerometer.class));
-			//		stopService(new Intent(BigBird.this, BigBirdService.class));
-			start.setText("Start");
-			start.setOnClickListener(startListener);
-			log("Stop");
-		}
-	};
-
-
-
-
-
-	private OnClickListener trainListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("train");
-			initTrain();
-
-		}
-	};
-
-	private OnClickListener loadListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("load");
-		}
-	}; 
-	private OnClickListener saveListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("save");
-		}
-	}; 
-
-	private OnClickListener recordListener = new OnClickListener() {
-		private boolean flag=false;
-
-		public void onClick(View v) {
-			log("record");
-			initTrain();
-			recordTimerTask=new TimerTask() {
-				public void run() {
-					log("TTask" +String.valueOf(SAMPLE_SIZE)+" "+String.valueOf(trainCounter));
-
-					if(trainCounter<SAMPLE_SIZE){
-						//					tv.setText(String.valueOf(SAMPLE_SIZE-trainCounter));
-						log(getDate()+" "+tempx+" "+tempy+" "+tempz +" "+trainCounter);
-						trainCounter++;
-					}
-					else{
-						recordTimerTask.cancel();
-						trainCounter=0;
-						flag=true;
-
-						timer.purge();
-
-					}
-				}};
-				timer.scheduleAtFixedRate(recordTimerTask, 0, SAMPLE_INTERVAL);
-				while(!flag);
-				flag=false;
-
-				record.setEnabled(false);
-				cancel.setEnabled(true);
-				select.setEnabled(true);
-				create.setEnabled(true);
-				tv.setText("Choose an action");
-		}
-	}; 
-	private OnClickListener cancelListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("cancel");
-		}
-	}; 
-	private OnClickListener selectListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("select");
-		}
-	}; 
-	private OnClickListener createListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("create");
-		}
-	}; 
-	private OnClickListener backListener = new OnClickListener() {
-		public void onClick(View v) {
-			log("back");
-			init();
-		}
-	}; 
-
-
-	// Accelerometer sensor
-	private final SensorEventListener startSensorListener = new SensorEventListener() {
-
-		public void onAccuracyChanged(Sensor arg0, int arg1) {
-		}
-
-		public void onSensorChanged(SensorEvent arg0) {
-		}
-	};
-
-
-	private final SensorEventListener trainSensorListener = new SensorEventListener() {
-
-
-		public void onSensorChanged(SensorEvent se)
-		{
-			tempx = se.values[0];
-			tempy = se.values[1];
-			tempz = se.values[2];
-
-
-		}
-
-		public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-	};
-
-	private void register() {
-		mSensorManager.registerListener(trainSensorListener, 
-				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_UI);
-	}
-
-
-
-
-
-	private void updateTV(float p_x, float p_y, float p_z)
-	{
-		tv.setText("x: "+p_x+"\ny: "+p_y+"\nz: "+p_z);
-	}
-
-	private SensorManager mSensorManager;
+	//Data
+	float[] sample;
+	Vector<Act> acts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) { 
 		super.onCreate(savedInstanceState);
 		init();
 
-		trainData = new float[3][SAMPLE_SIZE];
-
 		vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-		timer = new Timer();
-
-
-		startTimerTask =	new TimerTask() {
-			public void run() {
-				//log(getDate()+" "+tempx+" "+tempy+" "+tempz);
-			}
-		};
-
-
-		recordTimerTask =	new TimerTask() {
-			public void run() {
-				log("TTask" +String.valueOf(SAMPLE_SIZE)+" "+String.valueOf(trainCounter));
-
-				if(trainCounter<SAMPLE_SIZE){
-					//				tv.setText(String.valueOf(SAMPLE_SIZE-trainCounter));
-					log(getDate()+" "+tempx+" "+tempy+" "+tempz +" "+trainCounter);
-					trainCounter++;
-				}
-				else{
-					trainCounter=0;
-					recordTimerTask.cancel();
-					timer.purge();
-
-					tv.setText("Choose an action");
-					record.setEnabled(false);
-					cancel.setEnabled(true);
-					select.setEnabled(true);
-					create.setEnabled(true);
-
-
-				}
-			}
-		};
-
-		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		register();
+		acts = new Vector<Act>();
 
 		Twitter twitter = new Twitter("eranws","051240051");
+		/*		 Print Alon Sagi Status
+				System.out.println(twitter.getStatus("alonsagi"));
 
-		// Print Alon Sagi Status
-		//		System.out.println(twitter.getStatus("alonsagi"));
-
-		// Set my status
-		//		try{
-		//			twitter.updateStatus("from the Small Box!!!");
-		//		}
-		//		catch (TwitterException e){
-		//			BBUtils.log(e.getMessage());
-		//		}
-
+		 Set my status
+				try{
+					twitter.updateStatus("from the Small Box!!!");
+				}
+				catch (TwitterException e){
+					BBUtils.log(e.getMessage());
+				}
+		 */
 	}
 
 	private void init() {
@@ -267,16 +61,16 @@ public class BigBird extends Activity {
 
 		start = (Button) findViewById(R.id.Button01);
 		start.setText("Start");
-		start.setOnClickListener(startListener);
+		start.setOnClickListener(this);
 
 		train = (Button) findViewById(R.id.Button02);
-		train.setOnClickListener(trainListener);
+		train.setOnClickListener(this);
 
 		load = (Button) findViewById(R.id.Button03);
-		load.setOnClickListener(loadListener);
+		load.setOnClickListener(this);
 
 		save = (Button) findViewById(R.id.Button04);
-		save.setOnClickListener(saveListener);
+		save.setOnClickListener(this);
 
 	}
 
@@ -290,19 +84,19 @@ public class BigBird extends Activity {
 		tv = (TextView) findViewById(R.string.timer);
 
 		record = (Button) findViewById(R.id.Button05);
-		record.setOnClickListener(recordListener);
+		record.setOnClickListener(this);
 
 		cancel = (Button) findViewById(R.id.Button06);
-		cancel.setOnClickListener(cancelListener);
+		cancel.setOnClickListener(this);
 
 		select = (Button) findViewById(R.id.Button07);
-		select.setOnClickListener(selectListener);
+		select.setOnClickListener(this);
 
 		create = (Button) findViewById(R.id.Button08);
-		create.setOnClickListener(createListener);
+		create.setOnClickListener(this);
 
 		back = (Button) findViewById(R.id.Button09);
-		back.setOnClickListener(backListener);
+		back.setOnClickListener(this);
 
 		cancel.setEnabled(false);
 		select.setEnabled(false);
@@ -310,17 +104,159 @@ public class BigBird extends Activity {
 
 	}
 
-	private String getDate(){
-		GregorianCalendar g=(GregorianCalendar) GregorianCalendar.getInstance();
 
-		int ms = g.get(Calendar.MILLISECOND);
-		String time = 
-			g.get(Calendar.HOUR)+":"+
-			g.get(Calendar.MINUTE)+":"+
-			g.get(Calendar.SECOND)+":"+
-			ms;
-		return time;
-		//log(TAG, time+" "+s+"\n");
+	public void onClick(View v) {
+		switch (v.getId()){
+
+		//start
+		case R.id.Button01:
+			log("1");
+			//TODO
+			break;
+
+			//train
+		case R.id.Button02:
+			log("2");
+			log("train");
+			initTrain();
+			break;
+
+			//load
+		case R.id.Button03:
+			log("3");
+			log("load");
+			//TODO load acts
+
+			break;
+			//save
+		case R.id.Button04:
+			log("4");
+			log("save");
+			//TODO save acts
+
+			break;
+
+
+			//record
+		case R.id.Button05:
+			log("5");
+			log("record");
+			Intent i = new Intent(this, MeasureActivityTrain.class);
+			startActivityForResult(i, TRAIN_REQUEST);
+			break;
+
+			//cancel
+		case R.id.Button06:
+			log("6");
+			log("cancel");
+			sample=null;
+			initTrain();
+			break;
+			
+			//select
+		case R.id.Button07:
+			log("7");
+			log("select");
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Pick an Act");
+			String[] items = getActNames();
+			builder.setItems(items, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int item) {
+					acts.get(item).addSample(sample);
+					init();
+				}
+			});
+			AlertDialog alert = builder.create();
+
+			alert.show();
+
+
+			break;
+
+
+			//create - creates new act
+		case R.id.Button08:
+			log("8");
+			log("create");
+
+			AlertDialog.Builder crAlert = new AlertDialog.Builder(this);
+			crAlert.setTitle("New Act");
+			crAlert.setMessage("insert act name");
+
+			// You can set an EditText view to get user input besides
+			// which button was pressed.
+			final EditText input = new EditText(this);
+			crAlert.setView(input);
+
+			crAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					String value = input.getText().toString();
+
+					if (value!="" && value!=null){
+						acts.add(new Act(sample,value));
+					}
+
+					init();
+				}
+			});
+			crAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					init();
+				}
+			});
+
+			crAlert.show();
+
+			break;
+
+			//back
+		case R.id.Button09:
+			log("9");
+			log("back");
+			sample=null;
+			init();
+			break;
+			
+			//TODO acts.get(1).addToStringPool("Going upstairs");//is Bored
+			
+			
+		}//END Switch
+
 	}
-}
 
+	private String[] getActNames() {
+		int actsSize = acts.size();
+		String[] strArray = new String[actsSize];
+		for (int i=0;i<actsSize;i++)
+			strArray[i]=acts.get(i).name;
+		return strArray;
+	}
+
+	protected void onActivityResult (int requestCode, int resultCode, Intent intent){
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (intent!=null){
+			Bundle extras = intent.getExtras();
+			sample=extras.getFloatArray("");
+
+			if (requestCode==TRAIN_REQUEST){
+				record.setEnabled(false);
+
+				cancel.setEnabled(true);
+
+				if (acts.size()>0){ //none available
+					select.setEnabled(true);
+				}
+				create.setEnabled(true);
+				tv.setText("Choose an action");
+			}
+
+			if (requestCode==START_REQUEST){
+				//TODO
+			}
+
+		}
+
+	}	
+
+}

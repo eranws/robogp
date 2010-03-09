@@ -1,0 +1,27 @@
+1.
+		//		recordTimerTask =	new TimerTask() {
+		//			public void run() {
+		//				log("TTask" +String.valueOf(SAMPLE_SIZE)+" "+String.valueOf(trainCounter));
+		//
+		//				if(trainCounter<SAMPLE_SIZE){
+		//					//				tv.setText(String.valueOf(SAMPLE_SIZE-trainCounter));
+		//					log(getDate()+" "+tempx+" "+tempy+" "+tempz +" "+trainCounter);
+		//					trainCounter++;
+		//				}
+		//				else{
+		//					trainCounter=0;
+		//					recordTimerTask.cancel();
+		//					timer.purge();
+		//
+		//					tv.setText("Choose an action");
+		//					record.setEnabled(false);
+		//					cancel.setEnabled(true);
+		//					select.setEnabled(true);
+		//					create.setEnabled(true);
+		//
+		//
+		//				}
+		//			}
+		//		};
+
+2.		
