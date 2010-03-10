@@ -9,6 +9,7 @@
 <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center_vertical|center_horizontal" android:text="@string/timer" android:id="@string/timer"/><Button android:id="@+id/Button06" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Cancel"></Button>
 <Button android:id="@+id/Button07" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Select from list" ></Button>
 <Button android:id="@+id/Button08" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Create new act"></Button>
-<Button android:id="@+id/Button09" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Back to main menu"></Button>
+<Button android:layout_height="wrap_content" android:id="@+id/Button10" android:text="Add to string pool" android:layout_width="fill_parent"></Button><Button android:id="@+id/Button09" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Back to main menu"></Button>
+
 
 </LinearLayout>

@@ -89,7 +89,7 @@ public class Perceptron {
 			scores[i]=temp;
 			i++;
 		}
-		float max=scores[0];
+		float max=Float.NEGATIVE_INFINITY;
 		int index=0;
 		for (int j=0;j<wSize;j++){
 			if (scores[j]>max){
@@ -109,6 +109,7 @@ public class Perceptron {
 
 
 	public void train(Vector<Act> acts) {
+		weights.clear();
 		for(int i=0;i<acts.size();i++)
 			weights.add(getWeights(acts,i));
 
