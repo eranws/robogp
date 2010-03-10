@@ -39,8 +39,11 @@ public class Act implements Serializable {
 
 	public String getFromStringPool() {
 		int size = stringPool.size();
+		if (size>0){
 		int rnd = (int) Math.floor(size*Math.random());
 		return stringPool.get(rnd);
+		}
+		else return name;
 	}
 
 	public Vector<float[]> getProcessedData(){

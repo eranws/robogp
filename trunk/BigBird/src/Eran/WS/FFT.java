@@ -212,7 +212,7 @@ public class FFT {
 
 
 	public static float[] getRealFFT(float[] sample) {
-		float[] realTemp=new float[BBUtils.SAMPLE_NUM];
+		float[] realTemp=new float[BBUtils.SAMPLE_SIZE*BBUtils.SAMPLE_NUM];
 		
 		for(int i=0;i<BBUtils.SAMPLE_SIZE;i++){
 			Complex c[]=new Complex[BBUtils.SAMPLE_NUM];
@@ -223,7 +223,7 @@ public class FFT {
 
 			
 			for (int j=0;j<BBUtils.SAMPLE_NUM;j++){
-				realTemp[j] = (float) fftComplex[j].re();
+				realTemp[BBUtils.SAMPLE_NUM*i+j] = (float) fftComplex[j].re();
 			}
 			
 		}

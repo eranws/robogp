@@ -15,14 +15,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class BigBird extends Activity implements OnClickListener {
+public class BigBird extends Activity implements OnClickListener,OnLongClickListener {
 
 	private static final int TRAIN_REQUEST = 0;
 	private static final int START_REQUEST = 1;
@@ -30,10 +30,9 @@ public class BigBird extends Activity implements OnClickListener {
 	//UI
 	TextView tv;
 	// UI Buttons
-	Button	start,train,load,save,record,cancel,select,create,back,add;
+	Button	start,train,load,save,record,cancel,select,create,back,add,clear;
 
 
-	private Vibrator vib;
 	//Data
 	float[] sample;
 	Vector<Act> acts;
@@ -47,10 +46,11 @@ public class BigBird extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) { 
 		super.onCreate(savedInstanceState);
 		init();
-
-		vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+		
+		//		vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 		acts = new Vector<Act>();
 		perceptron =new	Perceptron();
+		loadActs();
 
 		Twitter twitter = new Twitter("eranws","051240051");
 		//TODO NTH Sign in window
@@ -84,14 +84,18 @@ public class BigBird extends Activity implements OnClickListener {
 		File dir = new File("/sdcard/BigBird");
 		if (!dir.isDirectory())
 			dir.mkdir();
-		f = new File("/sdcard/BigBird/1");
-//		File v = new File("/sdcard/BigBird/versions");
-		
+		//		File v = new File("/sdcard/BigBird/versions");
+
+
 		load = (Button) findViewById(R.id.Button03);
 		load.setOnClickListener(this);
 
 		save = (Button) findViewById(R.id.Button04);
 		save.setOnClickListener(this);
+
+		clear = (Button) findViewById(R.id.Button11);
+		clear.setOnLongClickListener(this);
+
 
 	}
 
@@ -121,7 +125,7 @@ public class BigBird extends Activity implements OnClickListener {
 
 		add = (Button) findViewById(R.id.Button10);
 		add.setOnClickListener(this);
-		
+
 		cancel.setEnabled(false);
 		select.setEnabled(false);
 		create.setEnabled(false);
@@ -129,7 +133,8 @@ public class BigBird extends Activity implements OnClickListener {
 	}
 
 
-	@SuppressWarnings("unchecked")
+
+
 	public void onClick(View v) {
 		switch (v.getId()){
 
@@ -152,26 +157,9 @@ public class BigBird extends Activity implements OnClickListener {
 		case R.id.Button03:
 			log("3");
 			log("load");
-			
-			try {
-				
-				if (f.exists()){
-				FileInputStream fis = new FileInputStream(f);
-				ObjectInputStream ois = new ObjectInputStream(fis);
 
-				Vector<Act> readObject = (Vector<Act>) ois.readObject();
-				acts = readObject;
+			loadActs();
 
-				ois.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			log("load success");
-			
-			perceptron.train(acts);
 
 			break;
 			//save
@@ -181,13 +169,14 @@ public class BigBird extends Activity implements OnClickListener {
 
 
 			if (acts!=null && acts.size()>0){
-			
+
 
 				try {
-					
+					f = new File("/sdcard/BigBird/2");
+
 					if (!f.exists())
 						f.createNewFile();
-					FileOutputStream fos = new FileOutputStream(f,true);
+					FileOutputStream fos = new FileOutputStream(f);
 					ObjectOutputStream oos = new ObjectOutputStream(fos);
 
 					oos.writeObject(acts);
@@ -284,12 +273,12 @@ public class BigBird extends Activity implements OnClickListener {
 			sample=null;
 			init();
 			break;
-			
+
 		case R.id.Button10:
 			log("10");
 			log("add");
 
-			
+
 			final AlertDialog.Builder crAlert2 = new AlertDialog.Builder(this);
 			crAlert2.setTitle("Add");
 			crAlert2.setMessage("Add description");
@@ -312,29 +301,54 @@ public class BigBird extends Activity implements OnClickListener {
 				}
 			});
 
-			
+
 			AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
 			builder2.setTitle("Pick an Act");
 			String[] items2 = getActNames();
 			builder2.setItems(items2, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int item) {
-					
-					
+
+
 					statItem=item;
 					crAlert2.show();
-					
-					
+
+
 					initTrain();
 				}
 			});
 			AlertDialog alert2 = builder2.create();
 
 			alert2.show();
-			
-			
+
+
 			break;
 
 		}//END Switch
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadActs() {
+		try {
+			f = new File("/sdcard/BigBird/2");
+
+			if (f.exists()){
+				FileInputStream fis = new FileInputStream(f);
+				ObjectInputStream ois = new ObjectInputStream(fis);
+
+				Vector<Act> readObject = (Vector<Act>) ois.readObject();
+				acts = readObject;
+
+				ois.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		log("load success");
+		
+		perceptron.train(acts);
 
 	}
 
@@ -368,16 +382,49 @@ public class BigBird extends Activity implements OnClickListener {
 				log("Got it!");
 				sample=extras.getFloatArray("");
 				int chosenAct = perceptron.vote(sample);
-				log(""+chosenAct);
-				//TODO tweet
+				String chosenActStr = acts.get(chosenAct).getFromStringPool();
 				
-				Intent j = new Intent(BigBird.this,MeasureActivityStart.class);
-				startActivityForResult(j,START_REQUEST);
+				log(chosenAct+chosenActStr);
+				//TODO tweet
+				tv.setText(chosenAct+" "+chosenActStr);
+				
+
+//				Intent j = new Intent(BigBird.this,MeasureActivityStart.class);
+//				startActivityForResult(j,START_REQUEST);
 			}
 
 
 		}
 
+	}
+
+
+
+	public boolean onLongClick(View v) {
+		log("Clear");
+		AlertDialog.Builder crAlert = new AlertDialog.Builder(this);
+		crAlert.setTitle("Achtung!");
+		crAlert.setMessage("Are you sure?");
+
+		// You can set an EditText view to get user input besides
+		// which button was pressed.
+		//		final EditText input = new EditText(this);
+		//		crAlert.setView(input);
+
+		crAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+
+				acts.clear();
+			}
+		});
+		crAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+			}
+		});
+
+		crAlert.show();
+
+		return false;
 	}	
 
 }
