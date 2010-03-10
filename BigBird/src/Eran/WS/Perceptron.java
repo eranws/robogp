@@ -72,6 +72,17 @@ public class Perceptron {
 
 			}
 		}
+		
+		//Normalize
+		double sumSqr=0;
+		for (int h=0;h<w.length;h++){
+			sumSqr+=Math.pow(w[h],2);
+		}
+		for (int h=0;h<w.length;h++){
+			w[h]/=sumSqr;
+		}
+		
+		
 		return w;
 	}
 
@@ -99,11 +110,6 @@ public class Perceptron {
 		}
 		
 		return index;
-		
-		
-
-
-
 	}
 
 
