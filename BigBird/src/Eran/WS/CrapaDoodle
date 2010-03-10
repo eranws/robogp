@@ -24,4 +24,30 @@
 		//			}
 		//		};
 
-2.		
+2.		function [w] = perceptron(X,Y)
+
+w=zeros(1,size(X,2));
+
+length = size(X,1);
+alpha = 1;
+
+% While (Ei s.t. y_i*<w, x_i> < 1)
+% w = w + yixi
+exists=true;
+
+while(exists)
+    exists = false; % Assume this will be the last iteration over the
+                    % example set.
+    for i = randperm(length)
+        a=(X(i,:)*w');
+        f=Y(i)*a;
+        if f<1
+            w = w + Y(i)*X(i,:)*alpha;
+            exists = true; % Classifier changed, run another iteration
+                           % to test that it's correct on the given set.
+        end %if
+    end %for
+end %while
+
+
+
