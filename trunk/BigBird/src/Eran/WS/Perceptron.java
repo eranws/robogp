@@ -6,7 +6,7 @@ import java.util.Vector;
 public class Perceptron {
 
 	Vector<float[]> weights;
-	
+
 	Perceptron(){
 		weights = new Vector<float[]>();
 	}
@@ -14,15 +14,15 @@ public class Perceptron {
 
 	float[] getWeights(	Vector<Act> acts,int index){
 
-//		assert (acts!=null);
+		//		assert (acts!=null);
 
 		Vector<float[]> x = new Vector<float[]>();
 		Vector<Integer> y = new Vector<Integer>();
-		
+
 		for (Act a : acts){
 			for (float[] rd : a.getProcessedData()){
 				x.add(rd);
-				
+
 				int res = (acts.indexOf(a)==index)?1:-1;
 				y.add(res);
 			}
@@ -32,7 +32,7 @@ public class Perceptron {
 		int numSamples =x.size();
 		int sizeX=x.get(0).length;
 
-		float[] w = new float[sizeX+1];//Weights, +1 for Bias
+		float[] w = new float[sizeX+1];//Weights, +1 for Bias XXX
 
 		float alpha =1;
 
@@ -78,8 +78,32 @@ public class Perceptron {
 
 
 	public int vote(float[] sample) {
-		// TODO Auto-generated method stub
-		return 0;
+		int wSize=weights.size();
+		float[] scores = new float[wSize];
+		int i=0;
+		for(float[] X:weights){
+			float temp=0;
+			for (int j=0;j<sample.length;j++){
+				temp+=X[j]*sample[j];
+			}
+			scores[i]=temp;
+			i++;
+		}
+		float max=scores[0];
+		int index=0;
+		for (int j=0;j<wSize;j++){
+			if (scores[j]>max){
+				max=scores[j];
+				index=j;
+			}
+		}
+		
+		return index;
+		
+		
+
+
+
 	}
 
 
@@ -87,6 +111,6 @@ public class Perceptron {
 	public void train(Vector<Act> acts) {
 		for(int i=0;i<acts.size();i++)
 			weights.add(getWeights(acts,i));
-		
+
 	}
 }
