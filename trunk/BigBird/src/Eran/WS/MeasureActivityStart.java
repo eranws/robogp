@@ -17,10 +17,6 @@ public class MeasureActivityStart extends Activity {
 	private float temp[];
 	private float[] trainData;
 
-	protected static final long SAMPLE_INTERVAL	= 500; //Period in Milliseconds
-	protected static final int SAMPLE_NUM		= 10; //number of samples
-	protected static final int SAMPLE_SIZE = 9; //size of each sample (acc'xyz=3)
-
 	private SensorManager mSensorManager;
 
 	private Timer timer;
@@ -40,11 +36,11 @@ public class MeasureActivityStart extends Activity {
 		v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
 
-		trainData = new float[SAMPLE_NUM*SAMPLE_SIZE];
-		temp= new float[SAMPLE_SIZE];
+		trainData = new float[BBUtils.SAMPLE_NUM*BBUtils.SAMPLE_SIZE];
+		temp= new float[BBUtils.SAMPLE_SIZE];
 		timer = new Timer();
 
-		timer.scheduleAtFixedRate(recordTimerTask, 0, SAMPLE_INTERVAL);
+		timer.scheduleAtFixedRate(recordTimerTask, 0, BBUtils.SAMPLE_INTERVAL);
 		
 		
 	}
@@ -102,16 +98,16 @@ public class MeasureActivityStart extends Activity {
 		
 		public void run() {
 
-			if(trainCounter<SAMPLE_NUM){
+			if(trainCounter<BBUtils.SAMPLE_NUM){
 
 				String str="";
-				for (int i=0;i<SAMPLE_SIZE;i++)
+				for (int i=0;i<BBUtils.SAMPLE_SIZE;i++)
 					str+=temp[i]+"\t\t ";
 				
-				BBUtils.log("START"+trainCounter+"/"+SAMPLE_NUM+": "+str);
+				BBUtils.log("START:"+trainCounter+"/"+BBUtils.SAMPLE_NUM+": "+str);
 
-				for (int j=0;j<SAMPLE_SIZE;j++){
-					trainData[SAMPLE_SIZE*trainCounter+j]=temp[j];
+				for (int j=0;j<BBUtils.SAMPLE_SIZE;j++){
+					trainData[BBUtils.SAMPLE_SIZE*trainCounter+j]=temp[j];
 				}
 				trainCounter++;
 			}
@@ -121,7 +117,7 @@ public class MeasureActivityStart extends Activity {
 				timer.purge();
 
 
-				v.vibrate(500);
+				v.vibrate(50);
 
 				Intent mIntent = new Intent();
 				mIntent.putExtra("",trainData);

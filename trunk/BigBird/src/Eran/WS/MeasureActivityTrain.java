@@ -13,16 +13,10 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.Window;
-
 public class MeasureActivityTrain extends Activity {
 
 	private float temp[];
 	private float[] trainData;
-
-	protected static final long SAMPLE_INTERVAL	= 500; //Period in Milliseconds
-	protected static final int SAMPLE_NUM		= 10; //number of samples
-	protected static final int SAMPLE_SIZE = 9; //size of each sample (acc'xyz=3)
-	private static final long DELAY = 3000; //milliseconds delay to start
 
 	private SensorManager mSensorManager;
 
@@ -33,27 +27,25 @@ public class MeasureActivityTrain extends Activity {
 	/**
 	 * Ctor
 	 */
-	public void onCreate(Bundle savedInstanceState) { 
+	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		mSensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
 		registerSensor();
 		
 		v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 4200);
-
-		trainData = new float[SAMPLE_NUM*SAMPLE_SIZE];
-		temp= new float[SAMPLE_SIZE];
+		trainData = new float[BBUtils.SAMPLE_NUM*BBUtils.SAMPLE_SIZE];
+		temp= new float[BBUtils.SAMPLE_SIZE];
 		timer = new Timer();
 
 		timer.scheduleAtFixedRate(countDownTimerTask, 0, 100);
-		timer.scheduleAtFixedRate(recordTimerTask, DELAY, SAMPLE_INTERVAL);
+		timer.scheduleAtFixedRate(recordTimerTask, BBUtils.TRAIN_DELAY, BBUtils.SAMPLE_INTERVAL);
 		
 		
-		@SuppressWarnings("unused")
-		ProgressDialog dialog=ProgressDialog.show(MeasureActivityTrain.this, "Training", 
-                "Starting in 5 seconds. Please wait...", true,true);
+//		@SuppressWarnings("unused")
+//		ProgressDialog dialog=ProgressDialog.show(MeasureActivityTrain.this, "Training", 
+//                "Starting in 3 seconds. Please wait...", true,true);
 		 
 			
 		
@@ -114,16 +106,16 @@ public class MeasureActivityTrain extends Activity {
 		
 		public void run() {
 
-			if(trainCounter<SAMPLE_NUM){
+			if(trainCounter<BBUtils.SAMPLE_NUM){
 
 				String str="";
-				for (int i=0;i<SAMPLE_SIZE;i++)
+				for (int i=0;i<BBUtils.SAMPLE_SIZE;i++)
 					str+=temp[i]+"\t\t ";
 				
-				BBUtils.log(trainCounter+"/"+SAMPLE_NUM+": "+str);
+				BBUtils.log(trainCounter+"/"+BBUtils.SAMPLE_NUM+": "+str);
 
-				for (int j=0;j<SAMPLE_SIZE;j++){
-					trainData[SAMPLE_SIZE*trainCounter+j]=temp[j];
+				for (int j=0;j<BBUtils.SAMPLE_SIZE;j++){
+					trainData[BBUtils.SAMPLE_SIZE*trainCounter+j]=temp[j];
 				}
 				trainCounter++;
 				//				tv.setText(""+(SAMPLE_NUM-trainCounter));
@@ -151,7 +143,7 @@ public class MeasureActivityTrain extends Activity {
 		TimerTask countDownTimerTask = new TimerTask() {
 			@Override
 			public void run() {
-				if (CDCounter<50){
+				if (CDCounter<30){
 					if((CDCounter%10)==0){//every second
 						BBUtils.log("COUNTDOWN "+CDCounter);
 						if((CDCounter/10)==2){//on the 5th time

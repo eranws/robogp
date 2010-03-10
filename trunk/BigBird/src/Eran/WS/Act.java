@@ -1,12 +1,21 @@
 package Eran.WS;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Act {
-	String name;
-	Vector<String> stringPool;
-	Vector<float[]> rawData;
 
+public class Act implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	String name;
+	private Vector<String> stringPool;
+	private Vector<float[]> rawData;
+	private Vector<float[]> realfft;
+
+	
 	public Act(float[] sample, String value){
 	BBUtils.log("act Ctor: "+value);
 	name = value;
@@ -14,6 +23,25 @@ public class Act {
 	rawData 	= new Vector<float[]>();
 	
 	rawData.add(sample);
+	
+	realfft = new Vector<float[]>();
+	for(int i=0;i<BBUtils.SAMPLE_SIZE;i++){
+		Complex c[]=new Complex[BBUtils.SAMPLE_NUM];
+		for (int j=0;j<BBUtils.SAMPLE_NUM;j++){
+			c[j]=new Complex(sample[i+j*BBUtils.SAMPLE_SIZE],0);
+		}
+		Complex[] fftComplex = FFT.fft(c);
+		
+		float[] realTemp=new float[BBUtils.SAMPLE_NUM];
+		for (int j=0;j<BBUtils.SAMPLE_NUM;j++){
+			realTemp[j] = (float) fftComplex[j].re();
+		}
+		
+		realfft.add(realTemp);
+		
+	}
+	
+	
 	}
 
 	public void addSample(float[] sample) {
@@ -30,6 +58,10 @@ public class Act {
 		return stringPool.get(rnd);
 	}
 	
+	public Vector<float[]> getProcessedData(){
+		;
+		return realfft;
+	}
 	
 	
 	
