@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -40,7 +41,7 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 
 	File f;
 	protected int statItem;
-
+	Twitter twitter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) { 
@@ -52,7 +53,7 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 		perceptron =new	Perceptron();
 		loadActs();
 
-		Twitter twitter = new Twitter("eranws","051240051");
+		twitter = new Twitter("eranws","051240051");
 		//TODO NTH Sign in window
 
 		/*		 Print Alon Sagi Status
@@ -385,7 +386,13 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 				String chosenActStr = acts.get(chosenAct).getFromStringPool();
 				
 				log(chosenAct+chosenActStr);
-				//TODO tweet
+					try{
+						twitter.updateStatus("chosenActStr");
+					}
+					catch (TwitterException e){
+						BBUtils.log(e.getMessage());
+					}
+					
 				tv.setText(chosenAct+" "+chosenActStr);
 				
 
