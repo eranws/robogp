@@ -2,8 +2,10 @@ package Eran.WS;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
@@ -28,7 +30,7 @@ public class BigBird extends Activity implements OnClickListener {
 	//UI
 	TextView tv;
 	// UI Buttons
-	Button	start,train,load,save,record,cancel,select,create,back;
+	Button	start,train,load,save,record,cancel,select,create,back,add;
 
 
 	private Vibrator vib;
@@ -37,6 +39,8 @@ public class BigBird extends Activity implements OnClickListener {
 	Vector<Act> acts;
 	Perceptron perceptron;
 
+	File f;
+	protected int statItem;
 
 
 	@Override
@@ -49,7 +53,7 @@ public class BigBird extends Activity implements OnClickListener {
 		perceptron =new	Perceptron();
 
 		Twitter twitter = new Twitter("eranws","051240051");
-		//TODO Sign in window
+		//TODO NTH Sign in window
 
 		/*		 Print Alon Sagi Status
 				System.out.println(twitter.getStatus("alonsagi"));
@@ -76,6 +80,13 @@ public class BigBird extends Activity implements OnClickListener {
 		train = (Button) findViewById(R.id.Button02);
 		train.setOnClickListener(this);
 
+		//Prompt for SD Card; TODO
+		File dir = new File("/sdcard/BigBird");
+		if (!dir.isDirectory())
+			dir.mkdir();
+		f = new File("/sdcard/BigBird/1");
+//		File v = new File("/sdcard/BigBird/versions");
+		
 		load = (Button) findViewById(R.id.Button03);
 		load.setOnClickListener(this);
 
@@ -108,6 +119,9 @@ public class BigBird extends Activity implements OnClickListener {
 		back = (Button) findViewById(R.id.Button09);
 		back.setOnClickListener(this);
 
+		add = (Button) findViewById(R.id.Button10);
+		add.setOnClickListener(this);
+		
 		cancel.setEnabled(false);
 		select.setEnabled(false);
 		create.setEnabled(false);
@@ -115,6 +129,7 @@ public class BigBird extends Activity implements OnClickListener {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public void onClick(View v) {
 		switch (v.getId()){
 
@@ -137,7 +152,25 @@ public class BigBird extends Activity implements OnClickListener {
 		case R.id.Button03:
 			log("3");
 			log("load");
-			//TODO load acts
+			
+			try {
+				
+				if (f.exists()){
+				FileInputStream fis = new FileInputStream(f);
+				ObjectInputStream ois = new ObjectInputStream(fis);
+
+				Vector<Act> readObject = (Vector<Act>) ois.readObject();
+				acts = readObject;
+
+				ois.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			log("load success");
+			
 			perceptron.train(acts);
 
 			break;
@@ -147,15 +180,11 @@ public class BigBird extends Activity implements OnClickListener {
 			log("save 0");
 
 
-			//Prompt for SD Card;
-
 			if (acts!=null && acts.size()>0){
+			
 
-				File dir = new File("/sdcard/BigBird");
-				dir.mkdir();
-
-				File f = new File("/sdcard/BigBird/1");
 				try {
+					
 					if (!f.exists())
 						f.createNewFile();
 					FileOutputStream fos = new FileOutputStream(f,true);
@@ -164,10 +193,10 @@ public class BigBird extends Activity implements OnClickListener {
 					oos.writeObject(acts);
 
 					oos.close();
+					log("save success");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				log("save success");
 			}
 
 			break;
@@ -255,9 +284,55 @@ public class BigBird extends Activity implements OnClickListener {
 			sample=null;
 			init();
 			break;
+			
+		case R.id.Button10:
+			log("10");
+			log("add");
 
-			//TODO acts.get(1).addToStringPool("Going upstairs");//is Bored
+			
+			final AlertDialog.Builder crAlert2 = new AlertDialog.Builder(this);
+			crAlert2.setTitle("Add");
+			crAlert2.setMessage("Add description");
 
+			final EditText input2 = new EditText(this);
+			crAlert2.setView(input2);
+
+			crAlert2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					String str = input2.getText().toString();
+
+					if (str!="" && str!=null){
+						acts.get(statItem).addToStringPool(str);
+					}
+				}
+			});
+			crAlert2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					initTrain();
+				}
+			});
+
+			
+			AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+			builder2.setTitle("Pick an Act");
+			String[] items2 = getActNames();
+			builder2.setItems(items2, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int item) {
+					
+					
+					statItem=item;
+					crAlert2.show();
+					
+					
+					initTrain();
+				}
+			});
+			AlertDialog alert2 = builder2.create();
+
+			alert2.show();
+			
+			
+			break;
 
 		}//END Switch
 
@@ -293,6 +368,9 @@ public class BigBird extends Activity implements OnClickListener {
 				log("Got it!");
 				sample=extras.getFloatArray("");
 				int chosenAct = perceptron.vote(sample);
+				log(""+chosenAct);
+				//TODO tweet
+				
 				Intent j = new Intent(BigBird.this,MeasureActivityStart.class);
 				startActivityForResult(j,START_REQUEST);
 			}
