@@ -36,7 +36,7 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 
 	//Data
 	float[] sample;
-	Vector<Act> acts;
+	Vector<Act> acts;//,tempacts;
 	Perceptron perceptron;
 
 	File f;
@@ -163,6 +163,8 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 
 
 			break;
+			
+			
 			//save
 		case R.id.Button04:
 			log("4");
@@ -173,7 +175,7 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 
 
 				try {
-					f = new File("/sdcard/BigBird/2");
+					f = new File("/sdcard/BigBird/3");
 
 					if (!f.exists())
 						f.createNewFile();
@@ -331,7 +333,7 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 	@SuppressWarnings("unchecked")
 	private void loadActs() {
 		try {
-			f = new File("/sdcard/BigBird/2");
+			f = new File("/sdcard/BigBird/3");
 
 			if (f.exists()){
 				FileInputStream fis = new FileInputStream(f);
@@ -347,6 +349,27 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		/*
+		tempacts = new Vector<Act>();
+		boolean first;
+		Act b = null;
+		for (Act a:acts){
+			first = true;
+			for (float[] raw:a.rawData){
+				if (first){
+					b=new Act(raw,a.name);
+					b.stringPool=a.stringPool;
+					tempacts.add(b);
+				}
+				else
+					b.addSample(raw);
+					
+				first=false;
+					
+			}
+		}
+*/
+		
 		log("load success");
 		
 		perceptron.train(acts);
@@ -387,7 +410,8 @@ public class BigBird extends Activity implements OnClickListener,OnLongClickList
 				
 				log(chosenAct+chosenActStr);
 					try{
-						twitter.updateStatus("chosenActStr");
+						twitter.updateStatus(chosenActStr);
+						log("twit "+chosenActStr);
 					}
 					catch (TwitterException e){
 						BBUtils.log(e.getMessage());

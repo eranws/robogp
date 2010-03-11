@@ -11,8 +11,8 @@ public class Act implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	String name;
-	private Vector<String> stringPool;
-	private Vector<float[]> rawData;
+	public Vector<String> stringPool;
+	public Vector<float[]> rawData;
 	private Vector<float[]> realfft;
 
 
@@ -30,7 +30,9 @@ public class Act implements Serializable {
 
 	public void addSample(float[] sample) {
 		rawData.add(sample);
-		realfft.add(FFT.getRealFFT(sample));
+		float[] res = FFT.getRealFFT(sample);
+		
+		realfft.add(res);
 	}
 
 	public void addToStringPool(String str) {

@@ -1,6 +1,5 @@
 package Eran.WS;
 
-import java.util.Vector;
 
 /*************************************************************************
  *  Compilation:  javac FFT.java
@@ -213,19 +212,40 @@ public class FFT {
 
 	public static float[] getRealFFT(float[] sample) {
 		float[] realTemp=new float[BBUtils.SAMPLE_SIZE*BBUtils.SAMPLE_NUM];
-		
+
 		for(int i=0;i<BBUtils.SAMPLE_SIZE;i++){
 			Complex c[]=new Complex[BBUtils.SAMPLE_NUM];
 			for (int j=0;j<BBUtils.SAMPLE_NUM;j++){
-				c[j]=new Complex(sample[i+j*BBUtils.SAMPLE_SIZE],0);
+				float smp=sample[i+j*BBUtils.SAMPLE_SIZE];
+
+				c[j]=new Complex(smp,0);
 			}
 			Complex[] fftComplex = FFT.fft(c);
 
-			
+
 			for (int j=0;j<BBUtils.SAMPLE_NUM;j++){
 				realTemp[BBUtils.SAMPLE_NUM*i+j] = (float) fftComplex[j].re();
 			}
-			
+
+
+
+		}
+
+		//UGLY PATCH!!!
+		for(int i=0;i<BBUtils.SAMPLE_SIZE;i++){
+			float avg = 0,div=0,divtot = 0,tmp=0		;	
+			for (int j=0;j<BBUtils.SAMPLE_NUM;j++){
+
+				float smp=sample[i+j*BBUtils.SAMPLE_SIZE];
+				avg+=smp;
+				div=(tmp-smp);
+				divtot+=div;
+				tmp=smp;
+			}
+
+			avg/=BBUtils.SAMPLE_NUM;
+			realTemp[(i+1)*BBUtils.SAMPLE_NUM-1]=divtot;
+			realTemp[(i+1)*BBUtils.SAMPLE_NUM-2]=avg;
 		}
 		return realTemp;
 	}
