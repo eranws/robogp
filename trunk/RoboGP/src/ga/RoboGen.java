@@ -109,7 +109,7 @@ public class RoboGen {
 
 	public void makeRobot(){
 		//Create file
-		name = "Robo"+String.valueOf(generation)+String.valueOf(serial);
+		name = "Robo"+String.valueOf(generation)+"_"+String.valueOf(serial);
 		filename = Constants.path+name+".java";
 		file = new File(filename);
 		try {				
