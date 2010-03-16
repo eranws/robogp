@@ -14,7 +14,7 @@ import javax.tools.ToolProvider;
  * 	with N bits length.  
  *
  */
-public class RoboGen {
+public class RoboGen implements Comparable {
 
 	private static final int FLAGS = 2;
 
@@ -24,7 +24,7 @@ public class RoboGen {
 
 	private static final int COMMANDS_PER_EVENT = 4;
 
-	private static final int CHROMOSOME_SIZE = FLAGS+EVENTS*(COMMANDS+ACCURACY)*COMMANDS_PER_EVENT;
+	public static final int CHROMOSOME_SIZE = FLAGS+EVENTS*(COMMANDS+ACCURACY)*COMMANDS_PER_EVENT;
 
 
 	private static int statserial=0;		//update each robot creation
@@ -37,6 +37,7 @@ public class RoboGen {
 
 	private String name;
 
+	private int score;
 
 	/**
 	 * Default Ctor. generates random seed.
@@ -64,7 +65,7 @@ public class RoboGen {
 
 		serial=statserial++; //set and update serial
 		generation=statgeneration;
-		
+
 		makeRobot();
 
 
@@ -72,11 +73,9 @@ public class RoboGen {
 
 	}
 
-	public static int getStatgeneration() {
-		return statgeneration;
-	}
-	public static void setStatgeneration(int statgen) {
-		RoboGen.statgeneration = statgen;
+	public static void incStatgeneration() {
+		statgeneration++;
+		statserial=0;
 	}
 	public int getGeneration() {
 		return generation;
@@ -105,12 +104,13 @@ public class RoboGen {
 	private  File file;
 	private  FileWriter fw;
 
+	public static String path="robocode/robots/ga/";
 	private String filename;
 
 	public void makeRobot(){
 		//Create file
 		name = "Robo"+String.valueOf(generation)+"_"+String.valueOf(serial);
-		filename = Constants.path+name+".java";
+		filename = path+name+".java";
 		file = new File(filename);
 		try {				
 			file.createNewFile();
@@ -127,8 +127,8 @@ public class RoboGen {
 					"\n}public void onHitWall(HitWallEvent event){\n",
 					"\n}}"
 			};
-			
-			
+
+
 			fw.write(parts[0]);
 			fw.write(String.valueOf(Boolean.valueOf(""+chromosome.charAt(0))));
 			fw.write(parts[1]);
@@ -142,11 +142,11 @@ public class RoboGen {
 					command = Integer.parseInt(chromosome.substring(FLAGS+j*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i, FLAGS+COMMANDS+j*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i),2);
 					param = Integer.parseInt(chromosome.substring(FLAGS+COMMANDS+j*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i, FLAGS+(j+1)*(COMMANDS+ACCURACY)+(COMMANDS+ACCURACY)*i),2);
 					fw.write(getCommandLine(command,param));
-					
+
 				}
 				fw.write(parts[i+3]);
 			}
-			
+
 			fw.close();
 			compile();
 		} catch (IOException e) {e.printStackTrace();}
@@ -158,7 +158,7 @@ public class RoboGen {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		int compilationResult =	compiler.run(null, null, null, filename);
 		if(compilationResult == 0){
-			System.out.println("Compilation is successful");//XXX BREAK?
+			//System.out.println("Compilation is successful");//XXX BREAK?
 		}else{
 			System.err.println("Compilation Failed");
 		}
@@ -170,7 +170,7 @@ public class RoboGen {
 
 		String s=actions[(command)]+getParam(command,param)+");";
 		return s;
-		
+
 
 	}
 	private double getParam(int action, int value){
@@ -192,7 +192,34 @@ public class RoboGen {
 	};
 
 
-	
+
+	public void setScore(Integer tempValue) {
+		score=tempValue;
+
+	}
+
+	public int getScore() {
+		return score;
+
+	}
+
+	@Override
+	public int compareTo(Object arg0) {
+		RoboGen other = (RoboGen) arg0;
+		return 	(int) Math.signum(score-other.getScore());
+	}
+
+	public static int getStatgeneration() {
+		return statgeneration;
+	}
+
+	public static void resetSerial() {
+		statserial=0;
+		
+	}
+
+
+
 }
 
 
